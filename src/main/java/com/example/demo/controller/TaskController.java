@@ -48,15 +48,23 @@ public class TaskController {
         return taskService.createTask(title, description, status, priority, assignee);
     }
 
-    @PatchMapping("/change")
+
+
+    @PatchMapping("/change/{id}")
     @Operation(
             summary = "Редактирование задачи",
             description = "Позволяет изменить параметры существующей задачи."
     )
     @PreAuthorize("hasRole('ADMIN')")
-    public String change() {
-        return "Изменение задачи";
+    public Task change(@PathVariable Long id,
+                       @RequestParam @NotBlank String title,
+                       @RequestParam @NotBlank String description,
+                       @RequestParam @Valid Status status,
+                       @RequestParam @Valid Priority priority,
+                       @RequestParam @NotBlank String assignee) {
+        return taskService.change(id, title, description, status, priority, assignee);
     }
+
 
     @GetMapping("/get")
     @Operation(

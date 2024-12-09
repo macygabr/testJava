@@ -48,7 +48,7 @@ public class UserService {
      * @return пользователь
      */
     public User getByUsername(String username) {
-        return repository.findByUsername(username)
+        return repository.findByEmail(username)
                 .orElseThrow(() -> new GlobalExceptionHandler.HttpException(HttpStatus.NOT_FOUND,"Пользователь с именем " + username + " не найден"));
     }
 
