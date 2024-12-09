@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.exceptions.GlobalExceptionHandler;
+import com.example.demo.models.task.Comment;
 import com.example.demo.models.task.Priority;
 import com.example.demo.models.task.Status;
 import com.example.demo.models.task.Task;
@@ -57,9 +58,15 @@ public class TaskService {
         taskRepository.save(task);
     }
 
-    public void addComment(Long id, String comment) {
+    public void addComment(Long id, String content) {
         Task task = getTask(id);
+        Comment comment = Comment.builder()
+                .content(content)
+                .author(userService.getCurrentUser())
+                .task(task)
+                .build();
         task.getComments().add(comment);
+        taskRepository.save(task);
     }
     public Task change(Long id, String title, String description, Status status, Priority priority, String assignee) {
         Task task = getTask(id);

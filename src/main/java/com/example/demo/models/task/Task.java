@@ -48,9 +48,9 @@ public class Task {
     @Schema(description = "Исполнитель задачи")
     private User assignee;
 
-    @ElementCollection
-    @Schema(description = "Комментарии к задаче", example = "[\"Добавить тесты\", \"Перепроверить код\"]")
-    private List<String> comments;
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Schema(description = "Комментарии к задаче")
+    private List<Comment> comments;
 
     public void copy(Task newTask) {
         if (newTask == null) {

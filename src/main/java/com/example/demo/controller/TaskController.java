@@ -23,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Задачи")
 public class TaskController {
-
     private final TaskService taskService;
 
     @PostMapping("/create")
