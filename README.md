@@ -14,8 +14,7 @@ REST API сервис для управления задачами и комме
 ## Локальный запуск
 ### 1. Клонирование репозитория
 ```bash
-git clone https://github.com/your-repo/task-service.git
-cd task-service
+git@github.com:macygabr/testJava.git
 ```
 ### 2. Запуск с Docker Compose
 ```bash
