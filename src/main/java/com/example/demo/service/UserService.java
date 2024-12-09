@@ -1,19 +1,13 @@
 package com.example.demo.service;
 
-import com.example.demo.models.HttpException;
-import com.example.demo.models.User;
+import com.example.demo.exceptions.GlobalExceptionHandler;
+import com.example.demo.models.user.User;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.example.demo.models.Role;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,50 +17,50 @@ public class UserService {
     /**
      * Сохранение пользователя
      *
+     * @param user пользователь для сохранения
      * @return сохраненный пользователь
      */
     public User save(User user) {
-        return repository.save(user);
+        try {
+            return repository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при сохранении пользователя: " + e.getMessage(), e);
+        }
     }
 
     /**
      * Создание пользователя
      *
+     * @param user пользователь для создания
      * @return созданный пользователь
      */
     public User create(User user) {
-
         if (repository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Пользователь с таким email уже существует");
+            throw new GlobalExceptionHandler.HttpException(HttpStatus.CONFLICT,"Пользователь с таким email уже существует");
         }
-
         return save(user);
     }
 
     /**
      * Получение пользователя по имени пользователя
      *
+     * @param username имя пользователя
      * @return пользователь
      */
     public User getByUsername(String username) {
         return repository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new GlobalExceptionHandler.HttpException(HttpStatus.NOT_FOUND,"Пользователь с именем " + username + " не найден"));
     }
 
     /**
-     * Получение пользователя по имени пользователя
+     * Загрузка пользователя по имени пользователя
      * <p>
      * Нужен для Spring Security
      *
-     * @return пользователь
+     * @return реализация UserDetailsService
      */
     public UserDetailsService userDetailsService() {
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                return (UserDetails) getByUsername(username);
-            }
-        };
+        return this::getByUsername;
     }
 
     /**
@@ -75,21 +69,7 @@ public class UserService {
      * @return текущий пользователь
      */
     public User getCurrentUser() {
-        // Получение имени пользователя из контекста Spring Security
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
-    }
-
-
-    /**
-     * Выдача прав администратора текущему пользователю
-     * <p>
-     * Нужен для демонстрации
-     */
-    @Deprecated
-    public void getAdmin() {
-        var user = getCurrentUser();
-        user.setRole(Role.ROLE_ADMIN);
-        save(user);
     }
 }

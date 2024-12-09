@@ -3,8 +3,8 @@ package com.example.demo.service;
 import com.example.demo.dto.JwtAuthenticationResponse;
 import com.example.demo.dto.SignInRequest;
 import com.example.demo.dto.SignUpRequest;
-import com.example.demo.models.Role;
-import com.example.demo.models.User;
+import com.example.demo.models.user.Role;
+import com.example.demo.models.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,14 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+    private final UserService userService;
     /**
      * Регистрация пользователя
      *
