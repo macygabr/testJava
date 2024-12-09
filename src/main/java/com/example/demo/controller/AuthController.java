@@ -1,28 +1,31 @@
 package com.example.demo.controller;
 
-import com.example.demo.util.JwtUtil;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.example.demo.dto.JwtAuthenticationResponse;
+import com.example.demo.dto.SignInRequest;
+import com.example.demo.dto.SignUpRequest;
+import com.example.demo.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
+@Tag(name = "Аутентификация")
 public class AuthController {
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+    private final AuthenticationService authenticationService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
+    @Operation(summary = "Регистрация пользователя")
+    @PostMapping("/sign-up")
+    public JwtAuthenticationResponse signUp(@RequestBody @Valid SignUpRequest request) {
+        return authenticationService.signUp(request);
     }
 
-    @PostMapping("/login")
-    public String login(@RequestParam String email, @RequestParam String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password));
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return jwtUtil.generateToken(userDetails.getUsername());
+    @Operation(summary = "Авторизация пользователя")
+    @PostMapping("/sign-in")
+    public JwtAuthenticationResponse signIn(@RequestBody @Valid SignInRequest request) {
+        return authenticationService.signIn(request);
     }
 }
