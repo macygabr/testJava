@@ -99,7 +99,6 @@ public class TaskController {
                     @ApiResponse(responseCode = "404", description = "Задача не найдена")
             }
     )
-    @PreAuthorize("hasRole('ADMIN')")
     public String changeStatus(@PathVariable Long id, @RequestParam @Valid Status status) {
         taskService.changeStatus(id, status);
         return "Статус изменён";
@@ -132,7 +131,6 @@ public class TaskController {
             summary = "Добавление комментария",
             description = "Позволяет добавить комментарий к задаче."
     )
-    @PreAuthorize("hasRole('ADMIN')")
     public String comment(@PathVariable Long id, @RequestParam @NotBlank String comment) {
         taskService.addComment(id, comment);
         return "Комментарий добавлен";

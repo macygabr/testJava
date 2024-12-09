@@ -5,13 +5,14 @@ import com.example.demo.models.task.Comment;
 import com.example.demo.models.task.Priority;
 import com.example.demo.models.task.Status;
 import com.example.demo.models.task.Task;
+import com.example.demo.models.user.Role;
+import com.example.demo.models.user.User;
 import com.example.demo.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +43,21 @@ public class TaskService {
 
     public void changeStatus(Long id, Status status) {
         Task task = getTask(id);
-        task.setStatus(status);
-        taskRepository.save(task);
+        User currentUser = userService.getCurrentUser();
+        boolean isAdmin = currentUser.getRole() == Role.ROLE_ADMIN;
+        boolean isAssignee = task.getAssignee().equals(currentUser);
+
+        if (isAdmin || isAssignee) {
+            task.setStatus(status);
+            taskRepository.save(task);
+        } else {
+            throw new GlobalExceptionHandler.HttpException(
+                    HttpStatus.FORBIDDEN,
+                    "Недостаточно прав для изменения статуса задачи"
+            );
+        }
     }
+
 
     public void changePriority(Long id, Priority priority) {
         Task task = getTask(id);
@@ -60,13 +73,23 @@ public class TaskService {
 
     public void addComment(Long id, String content) {
         Task task = getTask(id);
-        Comment comment = Comment.builder()
-                .content(content)
-                .author(userService.getCurrentUser())
-                .task(task)
-                .build();
-        task.getComments().add(comment);
-        taskRepository.save(task);
+        User currentUser = userService.getCurrentUser();
+        boolean isAdmin = currentUser.getRole() == Role.ROLE_ADMIN;
+        boolean isAssignee = task.getAssignee().equals(currentUser);
+        if (isAdmin || isAssignee) {
+            Comment comment = Comment.builder()
+                    .content(content)
+                    .author(userService.getCurrentUser())
+                    .task(task)
+                    .build();
+            task.getComments().add(comment);
+            taskRepository.save(task);
+        } else {
+            throw new GlobalExceptionHandler.HttpException(
+                    HttpStatus.FORBIDDEN,
+                    "Недостаточно прав для добавления комментария"
+            );
+        }
     }
     public Task change(Long id, String title, String description, Status status, Priority priority, String assignee) {
         Task task = getTask(id);

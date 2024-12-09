@@ -9,5 +9,5 @@ COPY src ./src
 
 RUN mvn clean package
 
-CMD ["java", "-jar", "target/ApiGateWayApplication-0.0.1.jar"]
+CMD ["java", "-jar", "target/testJava-0.0.1.jar"]
 

@@ -22,7 +22,6 @@ public class GlobalExceptionHandler {
     }
 
     public static class HttpException extends RuntimeException {
-
         private final HttpStatus status;
 
         public HttpException(HttpStatus errorCode, String message) {
