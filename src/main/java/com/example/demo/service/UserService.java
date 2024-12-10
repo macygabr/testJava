@@ -72,4 +72,15 @@ public class UserService {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
     }
+
+    /**
+     * Удаление пользователя по email
+     *
+     */
+    public void deleteUser(String username) {
+        repository.delete(
+        repository.findByEmail(username)
+                .orElseThrow(() -> new GlobalExceptionHandler.HttpException(HttpStatus.NOT_FOUND,"Пользователь с именем " + username + " не найден"))
+        );
+    }
 }

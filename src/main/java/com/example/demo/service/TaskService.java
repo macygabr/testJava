@@ -21,6 +21,8 @@ public class TaskService {
     private final UserService userService;
 
     public Task createTask(String title, String description, Status status, Priority priority, String assignee) {
+        checkPermission();
+
         Task task = Task.builder()
                 .title(title)
                 .description(description)
@@ -42,8 +44,11 @@ public class TaskService {
     }
 
     public void changeStatus(Long id, Status status) {
+        checkPermission();
+
         Task task = getTask(id);
         User currentUser = userService.getCurrentUser();
+
         boolean isAdmin = currentUser.getRole() == Role.ROLE_ADMIN;
         boolean isAssignee = task.getAssignee().equals(currentUser);
 
@@ -60,12 +65,14 @@ public class TaskService {
 
 
     public void changePriority(Long id, Priority priority) {
+        checkPermission();
         Task task = getTask(id);
         task.setPriority(priority);
         taskRepository.save(task);
     }
 
     public void setAssignee(Long id, String assignee) {
+        checkPermission();
         Task task = getTask(id);
         task.setAssignee(userService.getByUsername(assignee));
         taskRepository.save(task);
@@ -92,6 +99,7 @@ public class TaskService {
         }
     }
     public Task change(Long id, String title, String description, Status status, Priority priority, String assignee) {
+        checkPermission();
         Task task = getTask(id);
         Task newTask = Task.builder()
                 .title(title)
@@ -110,4 +118,10 @@ public class TaskService {
                 .orElseThrow(() -> new GlobalExceptionHandler.HttpException(HttpStatus.NOT_FOUND, "Задача не найдена"));
     }
 
+    private void checkPermission(){
+        User author = userService.getCurrentUser();
+        if(author.getRole() == Role.ROLE_USER){
+            throw new GlobalExceptionHandler.HttpException(HttpStatus.FORBIDDEN, "Недостаточно прав");
+        }
+    }
 }
