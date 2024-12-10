@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import com.example.demo.service.JwtService;
 import com.example.demo.service.UserService;
+import jakarta.servlet.ServletException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -30,8 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
-    ) {
-    try {
+    ) throws ServletException, IOException {
         var authHeader = request.getHeader(HEADER_NAME);
         if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
@@ -61,8 +63,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
-    } catch (Exception e){
-        System.err.println(e.getMessage());
-    }
     }
 }

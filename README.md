@@ -18,5 +18,5 @@ git@github.com:macygabr/testJava.git
 ```
 ### 2. Запуск с Docker Compose
 ```bash
-docker-compose up --build
+docker-compose up -d && docker-compose logs -f
 ```

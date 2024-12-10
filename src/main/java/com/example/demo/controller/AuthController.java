@@ -3,11 +3,15 @@ package com.example.demo.controller;
 import com.example.demo.dto.JwtAuthenticationResponse;
 import com.example.demo.dto.SignInRequest;
 import com.example.demo.dto.SignUpRequest;
+import com.example.demo.exceptions.GlobalExceptionHandler;
+import com.example.demo.models.task.Status;
 import com.example.demo.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
